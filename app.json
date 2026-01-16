@@ -1,0 +1,53 @@
+{
+  "expo": {
+    "name": "zoom",
+    "slug": "zoom",
+    "version": "1.0.0",
+    "scheme": "zoom",
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
+    "web": {
+      "bundler": "metro",
+      "output": "static",
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-router"
+    ],
+    "experiments": {
+      "typedRoutes": true,
+      "tsconfigPaths": true
+    },
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.vincentdaribo.zoom"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "com.vincentdaribo.zoom"
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "c565e78f-0969-4f99-abc3-b57d78b5c3e4"
+      }
+    }
+  }
+}
