@@ -1,0 +1,79 @@
+const puppeteer = require('puppeteer');
+const httpServer = require('http-server');
+const fse = require('fs-extra');
+const path = require('path');
+const portfinder = require('portfinder');
+require("dotenv").config();
+
+class SPAPrerenderer {
+  constructor({ inputDir, outputDir, routes }) {
+    this.inputDir = inputDir;
+    this.outputDir = outputDir;
+    this.routes = routes;
+  }
+
+  async prerender() {
+    const server = httpServer.createServer({ root: this.inputDir });
+
+    // Configue portfinder
+    portfinder.basePort = 8081;
+
+    // Find port for starting the server
+    const port = await portfinder.getPortPromise();
+
+    server.listen(port, 'localhost', async () => {
+      console.log(`HTTP Server running on http://localhost:${port}`);
+
+      const browser = await puppeteer.launch({
+        headless: true,
+        args: [
+          "--disable-setuid-sandbox",
+          "--no-sandbox",
+          "--single-process",
+          "--no-zygote",
+        ],
+        executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || puppeteer.executablePath(),
+      });
+      // console.log("Executable path: " + browser.executablePath);
+      const page = await browser.newPage();
+
+      for (const route of this.routes) {
+        await page.goto(`http://localhost:${port}${route}`, { waitUntil: 'networkidle0' });
+        await new Promise(resolve => setTimeout(resolve, 5000)); // Wait 5 seconds
+
+        const content = await page.content(); // Capture the HTML content of the page
+
+        const fileName = route === '/' ? 'index.html' : `${route.slice(1)}.html`;
+        const outputPath = path.join(this.outputDir, fileName);
+        await fse.ensureDir(path.dirname(outputPath)); // Ensure directory exists
+        await fse.writeFile(outputPath, content); // Write the HTML content to file
+      }
+
+      await browser.close(); // Close the browser
+      console.log('Prerendering completed.');
+
+      // Copy the assets folder from inputDir to outputDir
+      const sourceAssetsPath = path.join(this.inputDir, 'assets');
+      const destAssetsPath = path.join(this.outputDir, 'assets');
+      await fse.copy(sourceAssetsPath, destAssetsPath);
+      console.log('Assets copied.');
+
+      server.close(); // Close the HTTP server at the end
+      console.log('HTTP Server closed.');
+    });
+  }
+}
+
+const inputDir = './dist';
+const outputDir = './prerendered';
+const routes = ['/'];
+
+const prerenderer = new SPAPrerenderer({
+  inputDir: path.join(__dirname, inputDir),
+  outputDir: path.join(__dirname, outputDir),
+  routes: routes
+});
+
+prerenderer.prerender()
+  .then(() => console.log('Prerendering completed.'))
+  .catch(err => console.error('Prerendering failed:', err));

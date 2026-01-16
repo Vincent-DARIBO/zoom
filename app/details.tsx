@@ -1,12 +1,10 @@
 import { StyleSheet, View } from 'react-native';
 
-import { Stack, useLocalSearchParams } from 'expo-router';
+import { Stack } from 'expo-router';
 
 import { Container } from '@/components/Container';
-import { ScreenContent } from '@/components/ScreenContent';
 
 export default function Details() {
-  const { name } = useLocalSearchParams();
 
   return (
     <View style={styles.container}>

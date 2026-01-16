@@ -10,6 +10,7 @@ export default function Root({ children }: { children: React.ReactNode }) {
       <head>
         <meta charSet="utf-8" />
         <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="google-site-verification" content="begFSamVnBaNuVS8oJ_sQxUeNgjlWrk7x6X4fdWQtio" />
 
         {/*
           This viewport disables scaling which makes the mobile website act more like a native app.
